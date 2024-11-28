@@ -1,25 +1,28 @@
-// controllers/image_controller.dart
-import 'package:get/get.dart';
-import '../model/Model.dart';
-import '../service/config.dart';
+ import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
-class ImageController extends GetxController {
-  var isLoading = true.obs;
-  var images = <ImageModel>[].obs;
+class DockController extends GetxController {
+  // List of icons in the dock
+  RxList<IconData> dockItems = [
+    Icons.person,
+    Icons.message,
+    Icons.call,
+    Icons.camera,
+    Icons.photo,
+  ].obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    fetchImages();
-  }
+  // Dragging and hovered states
+  Rx<IconData?> Icon = Rx<IconData?>(null);
+  RxInt hoveredIndex = RxInt(-1);
+  RxInt size = RxInt(-1);
 
-  void fetchImages() async {
-    try {
-      isLoading(true);
-      var fetchedImages = await ApiService.fetchImages(); // Implement this method
-      images.assignAll(fetchedImages);
-        } finally {
-      isLoading(false);
+  // Handle reordering logic
+  void reorder(int oldIndex, int newIndex) {
+    if (oldIndex != newIndex) {
+      final icon = dockItems.removeAt(oldIndex);
+      dockItems.insert(newIndex, icon);
     }
   }
 }
